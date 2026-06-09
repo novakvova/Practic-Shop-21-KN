@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using WebStoreMVC.Data.Entities.Identity;
+using WebStoreMVC.Interfaces;
+using WebStoreMVC.Models.Seeder;
 
 namespace WebStoreMVC;
 
@@ -16,13 +19,64 @@ public static class DbSeeder
         var context = services.GetRequiredService<Data.MyContextShopMVC>();
         await context.Database.MigrateAsync();
         var roleManager = services.GetRequiredService<RoleManager<RoleEntity>>();
-        // Створення ролей
-        foreach (var roleName in Constants.Roles.AllRoles)
+        var userManager = services.GetRequiredService<UserManager<UserEntity>>();
+        if (!context.Roles.Any()) // Якщо в БД не існує ролей
         {
-            if (!await roleManager.RoleExistsAsync(roleName))
+            // Створення ролей
+            foreach (var roleName in Constants.Roles.AllRoles)
             {
-                await roleManager.CreateAsync(new RoleEntity { Name = roleName });
+                if (!await roleManager.RoleExistsAsync(roleName))
+                {
+                    await roleManager.CreateAsync(new RoleEntity { Name = roleName });
+                }
             }
+        }
+
+        if (!context.Users.Any()) // Якщо в БД не існує користувачів
+        {
+            // Отримує інтерфейс дял роботи з зображеннями, щоб встановити аватар для користувача
+            var imageService = services.GetRequiredService<IImageService>();
+            var jsonFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JsonData", "Users.json");
+            if (File.Exists(jsonFile))
+            {
+                var jsonData = await File.ReadAllTextAsync(jsonFile);
+                try
+                {
+                    var users = JsonSerializer.Deserialize<List<SeederUserModel>>(jsonData);
+                    foreach (var user in users)
+                    {
+                        var entity = new UserEntity
+                        {
+                            Email = user.Email,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            UserName = user.Email
+                        };
+                        entity.Image = await imageService.SaveImageFromUrlAsync(user.Image);
+                        var result = await userManager.CreateAsync(entity, user.Password);
+                        if (!result.Succeeded)
+                        {
+                            Console.WriteLine("Помилка стоврення користувача "+ user.Email);
+                            continue;
+                        }
+                        foreach(var role in user.Roles)
+                        {
+                            if (await roleManager.RoleExistsAsync(role))
+                                await userManager.AddToRoleAsync(entity, role);
+                            else
+                                Console.WriteLine("Не вдалося знайти роль " + role);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Помилка читання даних із Json користувачів");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Помилка існування файлу Users.json");
+            }   
         }
     }
 }
