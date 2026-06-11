@@ -28,9 +28,9 @@
                             @category.Name
                         </h5>
 
-                        <a asp-controller="Category"
-                           asp-action="Details"
-                           asp-route-slug="@category.Slug"
+                        <a asp-controller="Home"
+                           asp-action="Products"
+                           asp-route-categorySlug="@category.Slug"
                            class="btn btn-primary mt-auto">
                             Переглянути
                         </a>
