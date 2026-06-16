@@ -25,4 +25,12 @@ public class ProductsController(
             }).ToList();
         return View(model);
     }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        ViewBag.Title = "Створити продукт";
+        ViewBag.Categories = myContext.Categories.ToList();
+        return View();
+    }
 }
