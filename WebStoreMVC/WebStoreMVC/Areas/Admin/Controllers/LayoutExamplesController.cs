@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using AspnetCoreMvcFull.Models;
+using WebStoreMVC.Areas.Models;
 
-namespace AspnetCoreMvcFull.Controllers;
+namespace WebStoreMVC.Areas.Controllers;
 
 [Area("Admin")]
 public class LayoutExamplesController : Controller

@@ -1,4 +1,4 @@
-namespace AspnetCoreMvcFull.Models;
+namespace WebStoreMVC.Areas.Models;
 
 public class ErrorViewModel
 {
