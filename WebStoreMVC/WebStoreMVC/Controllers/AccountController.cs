@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebStoreMVC.Constants;
 using WebStoreMVC.Data.Entities.Identity;
 using WebStoreMVC.Interfaces;
@@ -14,13 +16,14 @@ public class AccountController(
     ) : Controller
 {
     [HttpGet] //Вхід нового користувача
-    public IActionResult Login()
+    public IActionResult Login(string? returnUrl = null)
     {
+        ViewBag.ReturnUrl = returnUrl; //зберігаємо адресу, якуди треба перейти
         return View();
     }
 
     [HttpPost] //Вхід нового користувача
-    public async Task<IActionResult> Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
     {
         if (ModelState.IsValid) //Зберігаємо категорію в БД, якщо модель валідна
         {
@@ -33,6 +36,11 @@ public class AccountController(
                 if (res.Succeeded)
                 {
                     await signInManager.SignInAsync(user, false); // залогінюємо користувача
+                    // перевіряємо, що URL локальний
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
                     return Redirect("/");
                 }
             }
@@ -82,6 +90,29 @@ public class AccountController(
             }
         }
         return View(model); // Якщо модель не валідна, повертаємо її назад на форму для виправлення помилок
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Profile()
+    {
+        var user = await userManager.Users
+            .Include(x => x.Orders)
+            .SingleOrDefaultAsync(x => x.UserName == User.Identity!.Name);
+
+        if (user == null)
+            return NotFound();
+
+        var model = new ProfileViewModel
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email!,
+            Image = user.Image,
+            OrdersCount = user.Orders?.Count ?? 0
+        };
+
+        return View(model);
     }
 
     [HttpPost]
