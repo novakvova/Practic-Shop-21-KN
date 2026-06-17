@@ -26,9 +26,17 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
+                        @if (User.IsInRole(WebStoreMVC.Constants.Roles.Admin))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" 
+                                    asp-area="Admin" 
+                                    asp-controller="Products" 
+                                    asp-action="Index">
+                                    Адмін Панель
+                                </a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a asp-controller="Cart" asp-action="Index">
                                 🛒 Кошик (@cart.Sum(x => x.Quantity))
@@ -38,8 +46,8 @@
 
                     </ul>
 
-                    @if(User.Identity.IsAuthenticated)
-                        {
+                    @if (User.Identity.IsAuthenticated)
+                    {
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item me-2">
                                 <a class="btn btn-link"
@@ -55,9 +63,9 @@
                                 }
                             </li>
                         </ul>
-                        }
-                        else
-                        {
+                    }
+                    else
+                    {
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item me-2">
                                 <a class="btn btn-outline-primary"
@@ -74,7 +82,7 @@
                                 </a>
                             </li>
                         </ul>
-                        }
+                    }
 
                     
                 </div>
