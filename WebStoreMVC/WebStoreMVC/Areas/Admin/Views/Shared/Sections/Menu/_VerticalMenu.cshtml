@@ -8,16 +8,16 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu">
 
     @* ! Hide app brand if navbar-full *@
-    <div class='app-brand demo @((@ViewData["navbarFull"] != null && Convert.ToBoolean(@ViewData["navbarFull"])) ? "d-xl-none" : "")'>
-        <a asp-controller="Dashboards" asp-action="Index" class="app-brand-link gap-xl-0 gap-2">
-            <span class="app-brand-logo demo me-1">
-                @await Html.PartialAsync("../_Partials/_Macros")
-            </span>
-            <span class="app-brand-text demo menu-text fw-semibold ms-2">@TempData.Peek("appName")</span>
-        </a>
+    <div class='px-6 py-5 @((ViewData["navbarFull"] != null && Convert.ToBoolean(ViewData["navbarFull"])) ? "d-xl-none" : "")'>
+        <a asp-area=""
+           asp-controller="Home"
+           asp-action="Index"
+           class="app-brand-link d-flex justify-content-center justify-content-lg-start align-items-center">
 
-        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-            <i class="menu-toggle-icon d-xl-inline-block align-middle"></i>
+            <img src="~/admin/img/College.svg"
+                 alt="College Logo"
+                 class="img-fluid"
+                 style="max-height: 50px; width: auto;">
         </a>
     </div>
 
