@@ -16,7 +16,7 @@
         @foreach (var category in Model)
         {
             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="card h-100 shadow-sm border-0 category-card">
+                <div class="card h-100 shadow-sm border-0 category-card position-relative">
 
                     <img src="@($"/images/400_{category.Image}")"
                          class="card-img-top"
@@ -31,7 +31,7 @@
                         <a asp-controller="Home"
                            asp-action="Products"
                            asp-route-categorySlug="@category.Slug"
-                           class="btn btn-primary mt-auto">
+                           class="btn btn-primary mt-auto stretched-link">
                             Переглянути
                         </a>
                     </div>
