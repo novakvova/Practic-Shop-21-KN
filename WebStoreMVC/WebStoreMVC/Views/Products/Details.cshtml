@@ -1,4 +1,5 @@
-﻿@model WebStoreMVC.Models.Product.ProductItemModel
+﻿@using System.Text.RegularExpressions
+@model WebStoreMVC.Models.Product.ProductItemModel
 
 @{
     ViewData["Title"] = Model.Name;
@@ -85,7 +86,11 @@
 
             <div class="mb-4">
                 <p class="lead">
-                    @Model.Description
+                    @Html.Raw(
+                                Model.Description != null
+                                    ? Regex.Replace(Model.Description, "<.*?>", "").Substring(0, Math.Min(100, Regex.Replace(Model.Description, "<.*?>", "").Length)) + "..."
+                                : ""
+                            )
                 </p>
             </div>
 

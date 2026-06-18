@@ -1,4 +1,5 @@
-﻿@model IEnumerable<WebStoreMVC.Models.Product.ProductItemModel>
+﻿@using System.Text.RegularExpressions
+@model IEnumerable<WebStoreMVC.Models.Product.ProductItemModel>
 
 @{
     ViewData["Title"] = "Каталог товарів";
@@ -47,9 +48,11 @@
                         </p>
 
                         <p class="card-text">
-                            @(product.Description.Length > 100
-                                ? product.Description[..100] + "..."
-                                : product.Description)
+                            @Html.Raw(
+                                product.Description != null
+                                    ? Regex.Replace(product.Description, "<.*?>", "").Substring(0, Math.Min(100, Regex.Replace(product.Description, "<.*?>", "").Length)) + "..."
+                                : ""
+                            )
                         </p>
 
                         <div class="mt-auto">
