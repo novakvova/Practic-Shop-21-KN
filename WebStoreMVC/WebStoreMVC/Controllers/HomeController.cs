@@ -23,6 +23,8 @@ namespace WebStoreMVC.Controllers
                 .SingleOrDefault(c => c.Slug == categorySlug);
             long catId = cat!.Id;
 
+            ViewBag.CategoryName = cat.Name;
+
             var items = myContext.Products
                 .Include(x=>x.Category)
                 .Include(x=>x.ProductImages)
